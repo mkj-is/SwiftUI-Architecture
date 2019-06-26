@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<playground version='6.0' target-platform='ios'>
+    <pages>
+        <page name='Counter-UIKit'/>
+        <page name='Counter-SwiftUI'/>
+        <page name='Counter-SwiftUI-Done'/>
+        <page name='Counter-SwiftUI+Component'/>
+    </pages>
+</playground>
