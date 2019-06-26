@@ -25,7 +25,7 @@ final class BindableStore<State>: BindableObject {
     }
 
     func dispatch(_ action: Action) -> Call {
-    { self.dispatch(action: action) }
+        { self.dispatch(action: action) }
     }
 
     private func dispatch(action: Action) {
@@ -63,30 +63,40 @@ struct App: View {
     @ObjectBinding var store: BindableStore<AppState>
 
     var body: some View {
-        CounterScene(count: store.state, dispatch: store.dispatch)
+        CounterScene(state: store.state, dispatch: store.dispatch)
             .relativeSize(width: 1, height: 1)
     }
 }
 
 struct CounterScene: View {
-    let count: Int
-    let dispatch: Dispatch
+    let text: String
+    let disabled: Bool
+    let increment, decrement, reset: Call
+
+    init(state: AppState, dispatch: Dispatch) {
+        self.text = "Count: \(state)"
+        self.disabled = state < 1
+
+        self.increment = dispatch(AppAction.increment)
+        self.decrement = dispatch(AppAction.decrement)
+        self.reset = dispatch(AppAction.reset)
+    }
 
     var body: some View {
         VStack {
-            Text( "Count: \(count)")
+            Text(text)
             Button(
-                action: dispatch(AppAction.increment),
+                action: increment,
                 label: { Text("+") }
             )
             Button(
-                action: dispatch(AppAction.decrement),
+                action: decrement,
                 label: { Text("-") }
-            )
+            ).disabled(disabled)
             Button(
-                action: dispatch(AppAction.reset),
+                action: reset,
                 label: { Text("Reset") }
-            )
+            ).disabled(disabled)
         }
     }
 }

@@ -49,7 +49,7 @@ func appReducer(state: AppState, action: Action) -> AppState {
     case AppAction.increment:
         return state + 1
     case AppAction.decrement:
-        return max(state - 1, 0)
+        return state - 1
     case AppAction.reset:
         return 0
     default:
@@ -63,40 +63,30 @@ struct App: View {
     @ObjectBinding var store: BindableStore<AppState>
 
     var body: some View {
-        CounterScene(state: store.state, dispatch: store.dispatch)
+        CounterScene(count: store.state, dispatch: store.dispatch)
             .relativeSize(width: 1, height: 1)
     }
 }
 
 struct CounterScene: View {
-    let text: String
-    let disabled: Bool
-    let increment, decrement, reset: Call
-
-    init(state: AppState, dispatch: Dispatch) {
-        self.text = "Count: \(state)"
-        self.disabled = state < 1
-
-        self.increment = dispatch(AppAction.increment)
-        self.decrement = dispatch(AppAction.decrement)
-        self.reset = dispatch(AppAction.reset)
-    }
+    let count: Int
+    let dispatch: Dispatch
 
     var body: some View {
         VStack {
-            Text(text)
+            Text("Count: \(count)")
             Button(
-                action: increment,
+                action: dispatch(AppAction.increment),
                 label: { Text("+") }
             )
             Button(
-                action: decrement,
+                action: dispatch(AppAction.decrement),
                 label: { Text("-") }
-            ).disabled(disabled)
+            )
             Button(
-                action: reset,
+                action: dispatch(AppAction.reset),
                 label: { Text("Reset") }
-            ).disabled(disabled)
+            )
         }
     }
 }
