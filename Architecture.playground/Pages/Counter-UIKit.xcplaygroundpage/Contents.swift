@@ -3,7 +3,7 @@ import PlaygroundSupport
 
 // Architecture definition
 protocol Action {}
-typealias Reducer<State> =  (State, Action) -> State
+typealias Update<State> =  (State, Action) -> State
 typealias Subscriber<State> = (State) -> Void
 
 // View binding
@@ -13,18 +13,18 @@ typealias Dispatch = (Action) -> Call
 // Store
 
 final class Store<State> {
-    private let reducer: Reducer<State>
+    private let update: Update<State>
     private var state: State
     private var subscribers: [Subscriber<State>]
 
-    init(state: State, reducer: @escaping Reducer<State>) {
+    init(state: State, update: @escaping Update<State>) {
         self.state = state
-        self.reducer = reducer
+        self.update = update
         self.subscribers = []
     }
 
     func dispatch(action: Action) {
-        state = reducer(state, action)
+        state = update(state, action)
         notify()
     }
 
@@ -50,7 +50,7 @@ enum AppAction: Action {
     case reset
 }
 
-func appReducer(state: AppState, action: Action) -> AppState {
+func update(state: AppState, action: Action) -> AppState {
     switch action {
     case AppAction.increment:
         return state + 1
@@ -123,6 +123,6 @@ final class ViewController: UIViewController {
 
 // App start
 
-let store = Store(state: 0, reducer: appReducer)
+let store = Store(state: 0, update: update)
 
 PlaygroundPage.current.liveView = ViewController(store: store)
