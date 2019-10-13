@@ -23,11 +23,11 @@ protocol Component: View {
 
 // Store
 
-final class BindableStore<State>: BindableObject {
     private let reducer: Reducer<State>
+final class BindableStore<State>: ObservableObject {
     private(set) var state: State
 
-    let didChange = PassthroughSubject<State, Never>()
+    let objectWillChange = PassthroughSubject<State, Never>()
 
     init(state: State, reducer: @escaping Reducer<State>) {
         self.state = state
@@ -40,7 +40,7 @@ final class BindableStore<State>: BindableObject {
 
     private func dispatch(action: Action) {
         state = reducer(state, action)
-        didChange.send(state)
+        objectWillChange.send(state)
     }
 }
 
@@ -114,7 +114,7 @@ struct CounterScene: Component {
 }
 
 struct App: View {
-    @ObjectBinding var store: BindableStore<AppState>
+    @ObservedObject var store: BindableStore<AppState>
 
     var body: some View {
         CounterScene(state: CounterScene.State(state: store.state), calls: CounterScene.Calls(dispatch: store.dispatch))

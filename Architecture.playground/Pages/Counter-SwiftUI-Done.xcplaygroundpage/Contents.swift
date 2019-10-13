@@ -13,11 +13,11 @@ typealias Dispatch = (Action) -> Call
 
 // Store
 
-final class BindableStore<State>: BindableObject {
     private let reducer: Reducer<State>
+final class BindableStore<State>: ObservableObject {
     private(set) var state: State
 
-    let didChange = PassthroughSubject<State, Never>()
+    let objectWillChange = PassthroughSubject<State, Never>()
 
     init(state: State, reducer: @escaping Reducer<State>) {
         self.state = state
@@ -30,7 +30,7 @@ final class BindableStore<State>: BindableObject {
 
     private func dispatch(action: Action) {
         state = reducer(state, action)
-        didChange.send(state)
+        objectWillChange.send(state)
     }
 }
 
@@ -60,11 +60,10 @@ func appReducer(state: AppState, action: Action) -> AppState {
 // View
 
 struct App: View {
-    @ObjectBinding var store: BindableStore<AppState>
+    @ObservedObject var store: BindableStore<AppState>
 
     var body: some View {
         CounterScene(state: store.state, dispatch: store.dispatch)
-            .relativeSize(width: 1, height: 1)
     }
 }
 
